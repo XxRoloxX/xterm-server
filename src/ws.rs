@@ -3,19 +3,20 @@ use websocket::Message;
 use std::thread;
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
+use super::pty::Pty;
+use websocket::OwnedMessage;
 
 pub fn sync_websockets(){
     let mut ws_server = Server::bind("127.0.0.1:3030").unwrap();
     let (tx, rx) = mpsc::channel::<String>();
-    let tx1 = tx.clone();
     let mpsc_receiver = Arc::from(Mutex::from(rx));
         
-    thread::spawn(move || {
-        loop {
-            tx1.send("Hello from server!".to_string()).unwrap();
-            thread::sleep(std::time::Duration::from_secs(1));
-        }
-    });
+    // thread::spawn(move || {
+    //     loop {
+    //         tx1.send("Hello from server!".to_string()).unwrap();
+    //         thread::sleep(std::time::Duration::from_secs(1));
+    //     }
+    // });
 
 
     loop {
@@ -32,6 +33,21 @@ pub fn sync_websockets(){
 
         let (mut receiver,mut sender ) = result.accept().unwrap().split().unwrap();
         let mpsc_rc_clone = mpsc_receiver.clone();
+        let tx1_clone = tx.clone();
+
+
+        let pty = Pty::new();
+        let pty_fd = pty.master_fd.try_clone().unwrap();
+
+        thread::spawn(move || {
+
+            let handle_pty_data = Box::new(move |data: &str| {
+                tx1_clone.send(data.to_string()).unwrap();
+            });
+
+            pty.listen(handle_pty_data);
+        });
+
 
         thread::spawn(move || {
             loop {
@@ -52,11 +68,21 @@ pub fn sync_websockets(){
         thread::spawn(move || {
             while let Ok(msg) = receiver.recv_message() {
                 println!("Received message: {:?}", msg);
+                match msg {
+                    OwnedMessage::Text(msg) => {
+                        // pty.write_to_pty(&msg);
+                        nix::unistd::write(&pty_fd, msg.as_bytes());
+                    },
+                    OwnedMessage::Binary(msg) => {
+
+                        nix::unistd::write(&pty_fd, &msg);
+                    }
+                    _ => {
+                        println!("Received non-text message");
+                    }
+                }
             }
         });
-
-
-    
     }
 }
 
