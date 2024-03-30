@@ -1,7 +1,13 @@
 mod pty;
 mod ws;
+use log::error;
+
 fn main() {
-    // println!("Hello, world!");
-    // pty::open_pty();
-    ws::sync_websockets();
+    env_logger::init();
+    match ws::sync_websockets() {
+        Ok(_) => (),
+        Err(e) => {
+            error!("Error while running sync_websockets: {:?}", e);
+        }
+    }
 }
