@@ -1,6 +1,6 @@
 # xterm-server
 
-This is a simple xterm server (written in Rust) that can be used to run xterm **remotely** in a browser.
+This is a simple xterm server implementation (written in Rust) that can be used to run xterm **remotely** in a browser.
 To connect to the server use the xterm.js library or any other reasonable websocket client.
 
 ## Setup
