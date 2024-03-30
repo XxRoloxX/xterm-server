@@ -13,7 +13,7 @@ use websocket::sync::{Reader, Server, Writer};
 use websocket::Message;
 use websocket::OwnedMessage;
 
-const WEBSOCKET_BIND_ADDR: &str = "127.0.0.1:3030";
+const WEBSOCKET_BIND_ADDR: &str = "0.0.0.0:3000";
 
 pub fn sync_websockets() -> Result<(), Box<dyn std::error::Error>> {
     let mut server = bind_to_ws_socket()?;
