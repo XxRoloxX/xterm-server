@@ -15,10 +15,11 @@ use websocket::OwnedMessage;
 
 const WEBSOCKET_BIND_ADDR: &str = "0.0.0.0:3000";
 
-pub fn sync_websockets() -> Result<(), Box<dyn std::error::Error>> {
+pub fn run_xterm_server() -> Result<(), Box<dyn std::error::Error>> {
     let mut server = bind_to_ws_socket()?;
 
     loop {
+        // The main thread will wait for a connection to be established
         let connection = match wait_for_ws_connection(&mut server) {
             Ok(connection) => connection,
             Err(e) => {
@@ -40,16 +41,22 @@ pub fn sync_websockets() -> Result<(), Box<dyn std::error::Error>> {
             }
         };
 
+        // Pty master fd is used to both read and write to the pty (it is connected to the stdin/stdout of the forked process)
         let pty_fd = match pty.master_fd.try_clone() {
             Ok(fd) => fd,
             Err(e) => {
-                error!("Error while cloning pty fd: {:?}", e);
+                error!("Error while cloning pty master fd: {:?}", e);
                 continue;
             }
         };
 
+        // When the pty outputs on the master fd, it will send the data to the mpsc channel
         let _handle_pty_output_thread = handle_pty_output(shared_tx, pty);
+
+        // The mpsc data thread will listen for data on the mpsc channel and send it to the websocket
         let _handle_mpsc_data_thread = handle_mpsc_data(shared_rx.clone(), sender);
+
+        // The websocket message thread will listen for messages from the websocket and write them to the pty
         let _handle_websocket_message_thread = handle_websocket_message(receiver, pty_fd);
     }
 }
@@ -77,11 +84,11 @@ pub fn handle_pty_output(sender: mpsc::Sender<String>, pty: Pty) -> thread::Join
 }
 
 pub fn handle_mpsc_data(
-    receiver: Arc<Mutex<mpsc::Receiver<String>>>,
+    rx: Arc<Mutex<mpsc::Receiver<String>>>,
     mut ws_sender: websocket::sender::Writer<std::net::TcpStream>,
 ) -> thread::JoinHandle<()> {
     thread::spawn(move || loop {
-        let receiver = receiver.lock();
+        let receiver = rx.lock();
 
         if receiver.is_err() {
             error!("Error locking receiver: {:?}", receiver);

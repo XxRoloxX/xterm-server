@@ -1,3 +1,4 @@
+use log::error;
 use nix::pty::forkpty;
 use nix::unistd::execvp;
 use std::ffi::CString;
@@ -25,7 +26,7 @@ impl Pty {
                 ) {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error executing shell: {:?}", e);
+                        error!("Error executing shell: {:?}", e);
                         std::process::exit(1);
                     }
                 }
@@ -43,7 +44,7 @@ impl Pty {
             let read_result = match nix::unistd::read(fd, &mut buf) {
                 Ok(n) => n,
                 Err(e) => {
-                    eprintln!("Error reading from pty: {:?}", e);
+                    error!("Error reading from pty: {:?}", e);
                     break;
                 }
             };
