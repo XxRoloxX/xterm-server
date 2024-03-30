@@ -56,4 +56,4 @@ websockat ws://localhost:8080
 
 # Showcase
 
-![xterm-server]("./assets/xterm.gif")
+![xterm-server](assets/xterm.gif)
