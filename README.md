@@ -1,7 +1,7 @@
 # xterm-server
 
 This is a simple xterm server that can be used to run xterm in a browser. It is meant to be used as a standalone server.
-To connect to the server, you can use the xterm.js library. You can find the library [here](https:://www.npmjs.com/package/xterm).
+To connect to the server, you can use the xterm.js library or any other websocket client.
 
 # Setup
 
