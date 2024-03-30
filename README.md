@@ -3,9 +3,9 @@
 This is a simple xterm server (written in Rust) that can be used to run xterm **remotely** in a browser.
 To connect to the server use the xterm.js library or any other reasonable websocket client.
 
-# Setup
+## Setup
 
-## Running the server
+### Running the server
 
 Run the following commands to setup the server:
 
@@ -15,7 +15,7 @@ cd xterm-server
 docker compose up
 ```
 
-## Setting the xterm server port
+### Setting the xterm server port
 
 You can set the port that the server listens on by setting the `XTERM_PORT` environment variable. The default port is `8080`.
 
@@ -23,9 +23,9 @@ You can set the port that the server listens on by setting the `XTERM_PORT` envi
 docker compose up -e XTERM_PORT=3000
 ```
 
-# Usage
+## Usage
 
-## With xterm.js
+### With xterm.js
 
 You can connect to the server using the xterm.js library. Here is an example of how you can do this within a browser:
 
@@ -45,7 +45,7 @@ ws.onmessage = (event) => {
 };
 ```
 
-## Without browser
+### Without browser
 
 For more minimal usage, you can use tools such as `websockat` or `wscat`:
 
@@ -53,6 +53,6 @@ For more minimal usage, you can use tools such as `websockat` or `wscat`:
 websockat ws://localhost:8080
 ```
 
-# Showcase
+## Showcase
 
 ![xterm-server](assets/xterm.gif)
