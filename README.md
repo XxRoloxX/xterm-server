@@ -1,6 +1,7 @@
 # xterm-server
 
-This is a simple xterm server that can be used to run xterm in a browser. It is meant to be used as a standalone server.
+This is a simple xterm server that can be used to run xterm **remotely** in a browser.
+It is meant to be used as a standalone server.
 To connect to the server, you can use the xterm.js library or any other websocket client.
 
 # Setup
@@ -52,3 +53,7 @@ For more minimal usage, you can use tools such as `websockat` or `wscat`:
 ```bash
 websockat ws://localhost:8080
 ```
+
+# Showcase
+
+![xterm-server]("./assets/xterm.gif")
