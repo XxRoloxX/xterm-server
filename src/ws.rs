@@ -1,5 +1,6 @@
 use super::pty::Pty;
 use log::{error, info};
+use std::env;
 use std::net::TcpStream;
 use std::os::fd::OwnedFd;
 use std::sync::mpsc;
@@ -13,7 +14,9 @@ use websocket::sync::{Reader, Server, Writer};
 use websocket::Message;
 use websocket::OwnedMessage;
 
-const WEBSOCKET_BIND_ADDR: &str = "0.0.0.0:3000";
+const DEFAULT_BIND_PORT: &str = "8080";
+const BIND_ADDRESS: &str = "0.0.0.0:";
+const XTERM_PORT_ENV: &str = "XTERM_PORT";
 
 pub fn run_xterm_server() -> Result<(), Box<dyn std::error::Error>> {
     let mut server = bind_to_ws_socket()?;
@@ -62,8 +65,13 @@ pub fn run_xterm_server() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn bind_to_ws_socket() -> Result<WsServer<NoTlsAcceptor>, Box<dyn std::error::Error>> {
-    let server = Server::bind(WEBSOCKET_BIND_ADDR).map_err(|e| {
-        error!("Couldn't bind to a socket {}:{}", WEBSOCKET_BIND_ADDR, e);
+    let websocket_bind_addr = BIND_ADDRESS.to_string()
+        + env::var(XTERM_PORT_ENV)
+            .unwrap_or(DEFAULT_BIND_PORT.to_string())
+            .as_str();
+
+    let server = Server::bind(&websocket_bind_addr).map_err(|e| {
+        error!("Couldn't bind to a socket {}:{}", websocket_bind_addr, e);
         e
     })?;
 
