@@ -5,6 +5,8 @@ To connect to the server, you can use the xterm.js library. You can find the lib
 
 # Setup
 
+## Running the server
+
 Run the following commands to setup the server:
 
 ```bash
@@ -13,8 +15,6 @@ cd xterm-server
 docker compose up
 ```
 
-# Usage
-
 ## Setting the xterm server port
 
 You can set the port that the server listens on by setting the `XTERM_PORT` environment variable. The default port is `8080`.
@@ -22,6 +22,8 @@ You can set the port that the server listens on by setting the `XTERM_PORT` envi
 ```bash
 docker compose up -e XTERM_PORT=3000
 ```
+
+# Usage
 
 ## With xterm.js
 
