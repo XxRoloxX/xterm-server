@@ -2,7 +2,7 @@
 
 This is a simple xterm server (written in Rust) that can be used to run xterm **remotely** in a browser.
 It is meant to be used as a standalone server.
-To connect to the server, you can use the xterm.js library or any other websocket client.
+To connect to the server use the xterm.js library or any other reasonable websocket client.
 
 # Setup
 
